@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <!-- 包含头部信息用于适应不同设备 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 包含 bootstrap 样式表 -->
+    <link rel="stylesheet" href="https://apps.bdimg.com/libs/bootstrap/3.2.0/css/bootstrap.min.css">
+</head>
+
+<body>
+<div class="container">
+
+		<div class="col-md-4 column">
+            <h2><a href="/">刷新</a></h2>
+			<form role="form" id="form1" action="/tax/query_tax" method="post">
+                <div class="form-group">
+                    <input type="text" class="form-control" id="fpdm" name="fpdm" placeholder="* 发票代码">
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="fphm" name="fphm" placeholder="* 发票号码">
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="kprq" name="kprq" placeholder="* 开票日期(YYYYMMDD)">
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="kjje" name="kjje" placeholder="* 校验码">
+                </div>
+                <div class="form-group">
+		            <textarea class="form-control" rows="3" id="tasks" name="tasks" placeholder="批量查验开发中..."></textarea>
+	            </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-default" id="submit1">提交</button>
+                </div>
+            </form>
+		</div>
+
+    <div class="col-md-8 column">
+        <h2>最近查验发票记录</h2>
+        <table class="table table-striped table-bordered table-hover table-condensed">
+            <thead>
+            <tr>
+                <th>NO</th>
+                {% for key in keys %}
+                <th>{{key}}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for row in rows %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                {% for key in keys %}
+
+                {% if key == 'png_name' and row.get(key) %}
+                <td><a href="/tax/query_png?png_name={{ row.get(key) }}">
+                    <span class="glyphicon glyphicon-picture"></span></a>
+                </td>
+
+                {% elif key == 'state' and row.get(key) == 1 %}
+                <td>loading..</td>
+                {% elif key == 'state' and row.get(key) == 2 %}
+                <td>成功</td>
+                {% elif key == 'state' and row.get(key) == -1 %}
+                <td><a href="/tax/query_tax?fpdm={{row.get('fpdm')}}&fphm={{row.get('fphm')}}&kprq={{row.get('kprq')}}&kjje={{row.get('kjje')}}">
+                    失败(重试)</a>
+                </td>
+
+                {% else %}
+                <td>{{ row.get(key) }}</td>
+
+                {% endif %}
+                {% endfor %}
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
